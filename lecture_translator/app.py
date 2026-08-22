@@ -6,6 +6,34 @@ from PIL import Image, ImageDraw, ImageFont
 from faster_whisper import WhisperModel
 from deep_translator import GoogleTranslator
 from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, ColorClip
+from googletrans import Translator
+from deep_translator import GoogleTranslator
+
+# Initialize primary translator
+gt_translator = Translator()
+
+def safe_translate(text, target_lang='zh-cn'):
+    if not text.strip():
+        return text
+    
+    # Attempt 1: googletrans
+    try:
+        res = gt_translator.translate(text, dest=target_lang)
+        if res and res.text:
+            return res.text
+    except Exception:
+        pass
+
+    # Attempt 2: deep-translator fallback
+    try:
+        translated = GoogleTranslator(source='auto', target='zh-CN').translate(text)
+        if translated:
+            return translated
+    except Exception:
+        pass
+
+    # Attempt 3: If all translation attempts fail, return original text to prevent crashes
+    return text
 
 # Function to ensure a Chinese TTF font exists in the environment
 def get_chinese_font_path():

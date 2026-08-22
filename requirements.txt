@@ -1,6 +1,0 @@
-streamlit
-faster-whisper
-deep-translator
-moviepy==1.0.3
-pillow
-numpy

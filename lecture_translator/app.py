@@ -60,7 +60,7 @@ def create_subtitle_clip(text, width, height, fontsize=28):
 st.set_page_config(page_title="Genshin Video Translator", page_icon="✨", layout="centered")
 
 st.title("✨ Genshin-Style Video Translator")
-st.write("Upload an English video, and turn it into a Mandarin RPG cutscene!")
+st.write("Upload an English video, and turn it into a Mandarin!")
 
 uploaded_file = st.file_uploader("Choose an MP4 video (keep it under 30 seconds for speed!)", type=["mp4", "mov"])
 

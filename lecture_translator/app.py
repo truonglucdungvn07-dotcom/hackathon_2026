@@ -489,24 +489,13 @@ if uploaded_file is not None and generate_clicked:
             box_x = (video.w - box_width) // 2
             box_y = video.h - 150
 
-            box_clip = (ColorClip(size=(box_width, box_height), color=(30, 30, 30))
-                        .set_opacity(0.75)
-                        .set_start(sub["start"])
-                        .set_duration(duration)
-                        .set_position((box_x, box_y)))
-
-            txt_clip = (create_subtitle_clip(sub["text"], box_width - 40, box_height)
-                        .set_start(sub["start"])
-                        .set_duration(duration)
-                        .set_position((box_x + 20, box_y)))
+        
 
             dialogue_clip = (draw_dialogue_box(sub["text"], width=box_width, height=box_height,
                                                 speaker_name=style["speaker"], accent_hex=style["accent"])
                               .set_start(sub["start"])
                               .set_duration(duration)
                               .set_position((box_x, box_y)))
-            clips.append(box_clip)
-            clips.append(txt_clip)
             clips.append(dialogue_clip)
 
         final_video = CompositeVideoClip(clips)

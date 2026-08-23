@@ -3,6 +3,67 @@ import os
 import urllib.request
 import numpy as np
 import streamlit as st
+st.set_page_config(page_title="Genshin Video Translator", page_icon="✨", layout="centered")
+
+# --- Custom Genshin Impact Theme CSS ---
+genshin_css = """
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Noto+Sans+SC:wght@500;700&display=swap');
+
+    /* Global Body & Background */
+    .stApp {
+        background: linear-gradient(135deg, #121824 0%, #1a2332 100%);
+        color: #ece5d8;
+        font-family: 'Noto Sans SC', sans-serif;
+    }
+
+    /* Genshin Title Styling */
+    h1 {
+        font-family: 'Cinzel', serif !important;
+        color: #f3e2b2 !important;
+        text-shadow: 0px 0px 10px rgba(243, 226, 178, 0.4);
+        font-weight: 700 !important;
+        text-align: center;
+    }
+
+    /* Subheaders and Section Titles */
+    h2, h3, label {
+        font-family: 'Cinzel', serif !important;
+        color: #d3bc8e !important;
+    }
+
+    /* Custom RPG Gold Buttons */
+    .stButton > button {
+        background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%) !important;
+        color: #f3e2b2 !important;
+        border: 2px solid #d3bc8e !important;
+        border-radius: 20px !important;
+        font-family: 'Cinzel', serif !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        padding: 10px 24px !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+    }
+
+    .stButton > button:hover {
+        background: linear-gradient(180deg, #d3bc8e 0%, #b39b69 100%) !important;
+        color: #1a2332 !important;
+        border-color: #ffffff !important;
+        box-shadow: 0 0 15px rgba(211, 188, 142, 0.6) !important;
+    }
+
+    /* Card Box Containers */
+    div[data-testid="stFileUploader"] {
+        background-color: rgba(30, 41, 59, 0.7);
+        border: 1px solid #d3bc8e;
+        border-radius: 12px;
+        padding: 15px;
+    }
+</style>
+"""
+
+st.markdown(genshin_css, unsafe_allow_html=True)
 from PIL import Image, ImageDraw, ImageFont
 from faster_whisper import WhisperModel
 from deep_translator import GoogleTranslator, MyMemoryTranslator

@@ -32,7 +32,6 @@ STYLES = {
         "prefix": "哈哈，",
     },
 }
-
 UNIVERSITIES = [
     "University of Melbourne (UniMelb)",
     "Monash University",
@@ -41,7 +40,6 @@ UNIVERSITIES = [
     "Australian National University (ANU)",
     "University of Queensland (UQ)",
 ]
-
 # ============================================================
 # SESSION STATE (declared before CSS so the CSS can react to it)
 # ============================================================
@@ -51,9 +49,7 @@ if "jobs" not in st.session_state:
     ]
 if "selected_style" not in st.session_state:
     st.session_state.selected_style = "storytelling"
-
 selected_key = st.session_state.selected_style
-
 # ============================================================
 # LECTUREBRIDGE THEME CSS
 # Cards/panels are styled via st.container(key=...), which gives
@@ -68,17 +64,13 @@ style_selected_css = "\n".join(
     for key, s in STYLES.items()
     if key == selected_key
 )
-
 lecturebridge_css = f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap');
-
     html, body, [class*="css"] {{ font-family: 'Poppins', 'Noto Sans SC', sans-serif; }}
-
     .stApp {{ background: #0d1420; color: #ece8de; }}
     #MainMenu, header[data-testid="stHeader"], footer {{ visibility: hidden; height: 0; }}
     .block-container {{ padding-top: 1.5rem; padding-bottom: 3rem; max-width: 1300px; }}
-
     /* ---- Top nav bar ---- */
     .lb-navbar {{
         display: flex; align-items: center; justify-content: space-between;
@@ -96,13 +88,11 @@ lecturebridge_css = f"""
     .lb-user-name {{ font-weight: 700; font-size: 14px; color: #f0ebe0; }}
     .lb-user-sub {{ font-size: 11px; color: #8b93a5; }}
     .lb-avatar {{ width: 34px; height: 34px; border-radius: 50%; background: #3a4256; }}
-
     /* ---- Hero ---- */
     .lb-hero {{ background: #151d2c; border: 1px solid #232c3d; border-radius: 14px; padding: 28px 32px; margin-bottom: 22px; }}
     .lb-hero h1 {{ color: #f0ebe0 !important; font-size: 30px; font-weight: 800; margin: 0 0 6px 0; }}
     .lb-hero h1 span {{ color: #e8c468; }}
     .lb-hero p {{ color: #9aa2b3; margin: 0; font-size: 15px; }}
-
     /* ---- Card panels (real containers via st.container(key=...)) ---- */
     .st-key-lecture_card, .st-key-recent_card, .st-key-demo_card {{
         background: #f4f1e8 !important;
@@ -112,7 +102,6 @@ lecturebridge_css = f"""
     }}
     .st-key-lecture_card *, .st-key-recent_card *, .st-key-demo_card * {{ color: #1a1f2b; }}
     .st-key-lecture_card h3, .st-key-recent_card h4, .st-key-demo_card h4 {{ font-weight: 700 !important; margin-top: 0 !important; }}
-
     /* Field labels: native Streamlit label, styled — no manual overlay, no overlap */
     div[data-testid="stTextInput"] label p,
     div[data-testid="stSelectbox"] label p {{
@@ -120,7 +109,6 @@ lecturebridge_css = f"""
         font-weight: 700 !important;
         font-size: 13px !important;
     }}
-
     /* Text inputs / selects: solid white field, black text, dark-but-legible placeholder */
     div[data-testid="stTextInput"] input {{
         background-color: #ffffff !important;
@@ -139,7 +127,6 @@ lecturebridge_css = f"""
         border-radius: 8px !important;
     }}
     div[data-testid="stSelectbox"] span {{ color: #000000 !important; }}
-
     /* Style-choice cards: plain buttons, no radio circle, colored per style */
     .st-key-style_btn_storytelling button {{ background: {STYLES['storytelling']['bg']} !important; color: {STYLES['storytelling']['accent']} !important; }}
     .st-key-style_btn_casual button       {{ background: {STYLES['casual']['bg']} !important;       color: {STYLES['casual']['accent']} !important; }}
@@ -155,55 +142,54 @@ lecturebridge_css = f"""
         white-space: normal !important;
     }}
     {style_selected_css}
-
-    /* File uploader as dropzone — dark blue box, white text throughout */
-    div[data-testid="stFileUploaderDropzone"] {{
+    /* File uploader as dropzone — dark blue box, white text throughout.
+       NOTE: the real element Streamlit renders is a <section>, not a <div> —
+       these selectors deliberately have NO tag qualifier so they match
+       regardless of what tag it actually is. */
+    [data-testid="stFileUploaderDropzone"] {{
         background-color: #16325c !important;
         border: 2px dashed #3a5d8f !important;
         border-radius: 12px !important;
     }}
     /* the "Drag and drop file here" instruction text + the "Limit ... per file" caption */
-    div[data-testid="stFileUploaderDropzone"] span,
-    div[data-testid="stFileUploaderDropzone"] small,
-    div[data-testid="stFileUploaderDropzone"] p {{
+    [data-testid="stFileUploaderDropzone"] span,
+    [data-testid="stFileUploaderDropzone"] small,
+    [data-testid="stFileUploaderDropzone"] p,
+    [data-testid="stFileUploaderDropzoneInstructions"],
+    [data-testid="stFileUploaderDropzoneInstructions"] * {{
         color: #ffffff !important;
     }}
     /* the "Browse files" button — kept a step lighter than the box so white text stays legible */
-    div[data-testid="stFileUploaderDropzone"] button {{
+    [data-testid="stFileUploaderDropzone"] button {{
         background-color: #25487e !important;
         color: #ffffff !important;
         border: 1px solid #3a5d8f !important;
         font-weight: 700 !important;
     }}
-    div[data-testid="stFileUploaderDropzone"] button:hover {{
+    [data-testid="stFileUploaderDropzone"] button:hover {{
         background-color: #315997 !important;
     }}
     /* once a file is picked, the "filename.mp4 / 1.3MB" row below the dropzone */
-    div[data-testid="stFileUploaderFile"],
-    div[data-testid="stFileUploaderFile"] * {{
+    [data-testid="stFileUploaderFile"],
+    [data-testid="stFileUploaderFile"] * {{
         color: #1a1f2b !important;
     }}
-
     /* Primary action buttons ("Begin Translation!"): light gold, unchanged hover */
     .stButton > button {{
         background: #f2d98d; color: #14181f; border: none; border-radius: 10px;
         font-weight: 700; font-size: 15px; padding: 12px 20px; transition: all 0.2s ease;
     }}
     .stButton > button:hover {{ background: #e8c468; box-shadow: 0 0 12px rgba(232, 196, 104, 0.5); }}
-
     div[data-testid="stProgress"] > div > div > div {{ background-color: #e8c468 !important; }}
-
     /* Status badges */
     .lb-badge {{ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 800; letter-spacing: 0.2px; white-space: nowrap; }}
     .lb-badge-done {{ background: #1c7a3b; color: #ffffff; }}
     .lb-badge-progress {{ background: #b23a3a; color: #ffffff; }}
     .lb-badge-queued {{ background: #a56a10; color: #ffffff; }}
-
     .lb-recent-row {{ display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #e4dfd0; }}
     .lb-recent-row:last-child {{ border-bottom: none; }}
     .lb-recent-title {{ font-weight: 700; font-size: 13.5px; color: #1a1f2b; }}
     .lb-recent-sub {{ font-size: 11.5px; color: #55524a; margin-top: 2px; }}
-
     .lb-demo-quote {{ border-radius: 8px; padding: 12px 14px; font-size: 13px; margin-top: 10px; }}
 </style>
 """

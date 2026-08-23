@@ -461,7 +461,7 @@ if uploaded_file is not None and generate_clicked:
             zh_text = translate_safely(en_text, google_translator, fallback_translator)
             styled_zh_text = f"{style['prefix']}{zh_text}" if style["prefix"] else zh_text
             subtitle_data.append({
-                "start": segment.start,
+                "start": segment.zstart,
                 "end": segment.end,
                 "english": en_text,
                 "chinese": zh_text,

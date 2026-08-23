@@ -246,7 +246,7 @@ if uploaded_file is not None:
                     continue
                     
                 box_width = int(video.w * 0.8)
-                box_height = 80
+                box_height = 120
                 box_x = (video.w - box_width) // 2
                 box_y = video.h - 150
 

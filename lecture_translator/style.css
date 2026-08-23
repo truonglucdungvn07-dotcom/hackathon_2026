@@ -68,7 +68,10 @@ lecturebridge_css = f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap');
     html, body, [class*="css"] {{ font-family: 'Poppins', 'Noto Sans SC', sans-serif; }}
-    .stApp {{ background: #0d1420; color: #ece8de; }}
+    .stApp, [data-testid="stAppViewContainer"] {{
+    background: #ebe7dc !important;
+    color: #1a1f2b !important;
+    }}
     #MainMenu, header[data-testid="stHeader"], footer {{ visibility: hidden; height: 0; }}
     .block-container {{ padding-top: 1.5rem; padding-bottom: 3rem; max-width: 1300px; }}
     /* ---- Top nav bar ---- */
@@ -147,27 +150,28 @@ lecturebridge_css = f"""
        these selectors deliberately have NO tag qualifier so they match
        regardless of what tag it actually is. */
     [data-testid="stFileUploaderDropzone"] {{
-        background-color: #16325c !important;
-        border: 2px dashed #3a5d8f !important;
-        border-radius: 12px !important;
+    background-color: #ffffff !important;
+    border: 2px dashed #c9c2ac !important;
+    border-radius: 12px !important;
     }}
-    /* the "Drag and drop file here" instruction text + the "Limit ... per file" caption */
+
     [data-testid="stFileUploaderDropzone"] span,
     [data-testid="stFileUploaderDropzone"] small,
     [data-testid="stFileUploaderDropzone"] p,
     [data-testid="stFileUploaderDropzoneInstructions"],
     [data-testid="stFileUploaderDropzoneInstructions"] * {{
-        color: #ffffff !important;
+        color: #1a1f2b !important;
     }}
-    /* the "Browse files" button — kept a step lighter than the box so white text stays legible */
+
     [data-testid="stFileUploaderDropzone"] button {{
-        background-color: #25487e !important;
-        color: #ffffff !important;
-        border: 1px solid #3a5d8f !important;
-        font-weight: 700 !important;
+    background-color: #f2d98d !important;
+    color: #14181f !important;
+    border: none !important;
+    font-weight: 700 !important;
     }}
+
     [data-testid="stFileUploaderDropzone"] button:hover {{
-        background-color: #315997 !important;
+    background-color: #e8c468 !important;
     }}
     /* once a file is picked, the "filename.mp4 / 1.3MB" row below the dropzone */
     [data-testid="stFileUploaderFile"],

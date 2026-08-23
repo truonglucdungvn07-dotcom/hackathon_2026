@@ -1,74 +1,16 @@
+# app.py
 import time
-import os
-import urllib.request
-import numpy as np
 import streamlit as st
+from faster_whisper import WhisperModel
+from deep_translator import GoogleTranslator, MyMemoryTranslator
+
+from config import STYLES, UNIVERSITIES, get_theme_css
+from utils.translator import translate_safely
+from utils.video_processor import process_video_subtitles
 
 st.set_page_config(page_title="LectureBridge", page_icon="🌉", layout="wide")
 
-from PIL import Image, ImageDraw, ImageFont
-from faster_whisper import WhisperModel
-from deep_translator import GoogleTranslator, MyMemoryTranslator
-from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, ColorClip
-
-# ============================================================
-# STYLE PRESETS
-# Each caption style maps to a speaker label, accent color and
-# a light-touch phrasing template. True creative rewriting of
-# the transcript (the way the mock-up's "Storytelling" example
-# turns a sentence into a mini-parable) needs an LLM call, which
-# isn't wired up here — deep_translator only does literal
-# translation. The templates below add a believable "flavor"
-# wrapper around the literal translation so each style still
-# reads differently, without inventing facts that weren't said.
-# ============================================================
-STYLES = {
-    "storytelling": {
-        "label": "Storytelling 故事风",
-        "accent": "#c9366a",
-        "bg": "#f7d9e1",
-        "speaker": "旁白",
-        "desc": "Rewrites complex business/humanities theories as vivid historical parables and case stories. Highly visual.",
-        "prefix": "【故事风】",
-    },
-    "casual": {
-        "label": "Casual Chat 闲聊风",
-        "accent": "#1d63a8",
-        "bg": "#d7e6f5",
-        "speaker": "同学",
-        "desc": "Translates dense formulas and concepts into relaxed, casual gossip style. Feels like chatting with roommates.",
-        "prefix": "",
-    },
-    "academic": {
-        "label": "Academic 学术风",
-        "accent": "#8a5c15",
-        "bg": "#efe0bd",
-        "speaker": "教授",
-        "desc": "Direct, highly structured, standardized academic terminology, ideal for engineering, mathematics and law papers.",
-        "prefix": "",
-    },
-    "comic": {
-        "label": "Comic / Funny 搞笑风",
-        "accent": "#5f3fc4",
-        "bg": "#e3ddf7",
-        "speaker": "梗王",
-        "desc": "Infuses internet slang and memes to explain dry points. Turn 2-hour lectures into high-quality comedy.",
-        "prefix": "哈哈，",
-    },
-}
-
-UNIVERSITIES = [
-    "University of Melbourne (UniMelb)",
-    "Monash University",
-    "University of Sydney (USYD)",
-    "UNSW Sydney",
-    "Australian National University (ANU)",
-    "University of Queensland (UQ)",
-]
-
-# ============================================================
-# SESSION STATE (declared before CSS so the CSS can react to it)
-# ============================================================
+# Session State Initialization
 if "jobs" not in st.session_state:
     st.session_state.jobs = [
         {"title": "COMP20003 Lecture 1", "meta": "UniMelb • 58 Mins", "status": "queued"},
@@ -77,165 +19,9 @@ if "selected_style" not in st.session_state:
     st.session_state.selected_style = "storytelling"
 
 selected_key = st.session_state.selected_style
+st.markdown(get_theme_css(selected_key), unsafe_allow_html=True)
 
-# ============================================================
-# LECTUREBRIDGE THEME CSS
-# Cards/panels are styled via st.container(key=...), which gives
-# each one a single stable class (st-key-<key>) on the ACTUAL
-# wrapper div holding its children — not a split, unclosed tag
-# spread across two separate st.markdown() calls. That was the
-# cause of the empty "ghost boxes" and the overlapping label text
-# in the previous version.
-# ============================================================
-style_selected_css = "\n".join(
-    f'.st-key-style_btn_{key} button {{ border: 2.5px solid {s["accent"]} !important; box-shadow: 0 0 0 3px {s["accent"]}33 !important; }}'
-    for key, s in STYLES.items()
-    if key == selected_key
-)
-
-lecturebridge_css = f"""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap');
-
-    html, body, [class*="css"] {{ font-family: 'Poppins', 'Noto Sans SC', sans-serif; }}
-
-    .stApp {{ background: #0d1420; color: #ece8de; }}
-    #MainMenu, header[data-testid="stHeader"], footer {{ visibility: hidden; height: 0; }}
-    .block-container {{ padding-top: 1.5rem; padding-bottom: 3rem; max-width: 1300px; }}
-
-    /* ---- Top nav bar ---- */
-    .lb-navbar {{
-        display: flex; align-items: center; justify-content: space-between;
-        background: #0d1420; border-bottom: 1px solid #1f2937;
-        padding: 14px 4px 18px 4px; margin-bottom: 18px;
-    }}
-    .lb-logo {{ display: flex; align-items: center; gap: 12px; }}
-    .lb-logo-box {{ width: 38px; height: 38px; background: #f0ebe0; border-radius: 8px; }}
-    .lb-logo-text {{ font-weight: 800; font-size: 20px; color: #f0ebe0; line-height: 1.1; }}
-    .lb-logo-sub {{ font-size: 10px; letter-spacing: 1px; color: #8b93a5; }}
-    .lb-nav-links {{ display: flex; gap: 32px; font-weight: 600; font-size: 15px; }}
-    .lb-nav-link-active {{ color: #e8c468; }}
-    .lb-nav-link {{ color: #ccd1db; }}
-    .lb-user {{ display: flex; align-items: center; gap: 10px; text-align: right; }}
-    .lb-user-name {{ font-weight: 700; font-size: 14px; color: #f0ebe0; }}
-    .lb-user-sub {{ font-size: 11px; color: #8b93a5; }}
-    .lb-avatar {{ width: 34px; height: 34px; border-radius: 50%; background: #3a4256; }}
-
-    /* ---- Hero ---- */
-    .lb-hero {{ background: #151d2c; border: 1px solid #232c3d; border-radius: 14px; padding: 28px 32px; margin-bottom: 22px; }}
-    .lb-hero h1 {{ color: #f0ebe0 !important; font-size: 30px; font-weight: 800; margin: 0 0 6px 0; }}
-    .lb-hero h1 span {{ color: #e8c468; }}
-    .lb-hero p {{ color: #9aa2b3; margin: 0; font-size: 15px; }}
-
-    /* ---- Card panels (real containers via st.container(key=...)) ---- */
-    .st-key-lecture_card, .st-key-recent_card, .st-key-demo_card {{
-        background: #f4f1e8 !important;
-        border-radius: 14px !important;
-        padding: 26px 28px !important;
-        margin-bottom: 18px !important;
-    }}
-    .st-key-lecture_card *, .st-key-recent_card *, .st-key-demo_card * {{ color: #1a1f2b; }}
-    .st-key-lecture_card h3, .st-key-recent_card h4, .st-key-demo_card h4 {{ font-weight: 700 !important; margin-top: 0 !important; }}
-
-    /* Field labels: native Streamlit label, styled — no manual overlay, no overlap */
-    div[data-testid="stTextInput"] label p,
-    div[data-testid="stSelectbox"] label p {{
-        color: #1a1f2b !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
-    }}
-
-    /* Text inputs / selects: solid white field, black text, dark-but-legible placeholder */
-    div[data-testid="stTextInput"] input {{
-        background-color: #ffffff !important;
-        border: 1px solid #cfc8b4 !important;
-        border-radius: 8px !important;
-        color: #000000 !important;
-        caret-color: #000000 !important;
-    }}
-    div[data-testid="stTextInput"] input::placeholder {{
-        color: #55524a !important;
-        opacity: 1 !important;
-    }}
-    div[data-testid="stSelectbox"] > div > div {{
-        background-color: #ffffff !important;
-        border: 1px solid #cfc8b4 !important;
-        border-radius: 8px !important;
-    }}
-    div[data-testid="stSelectbox"] span {{ color: #000000 !important; }}
-
-    /* Style-choice cards: plain buttons, no radio circle, colored per style */
-    .st-key-style_btn_storytelling button {{ background: {STYLES['storytelling']['bg']} !important; color: {STYLES['storytelling']['accent']} !important; }}
-    .st-key-style_btn_casual button       {{ background: {STYLES['casual']['bg']} !important;       color: {STYLES['casual']['accent']} !important; }}
-    .st-key-style_btn_academic button     {{ background: {STYLES['academic']['bg']} !important;     color: {STYLES['academic']['accent']} !important; }}
-    .st-key-style_btn_comic button        {{ background: {STYLES['comic']['bg']} !important;        color: {STYLES['comic']['accent']} !important; }}
-    div[class*="st-key-style_btn_"] button {{
-        border: 2.5px solid transparent !important;
-        border-radius: 10px !important;
-        font-weight: 700 !important;
-        font-size: 13.5px !important;
-        padding: 10px 8px !important;
-        min-height: 44px !important;
-        white-space: normal !important;
-    }}
-    {style_selected_css}
-
-    /* File uploader as dropzone — dark blue box, white text throughout */
-    div[data-testid="stFileUploaderDropzone"] {{
-        background-color: #16325c !important;
-        border: 2px dashed #3a5d8f !important;
-        border-radius: 12px !important;
-    }}
-    /* the "Drag and drop file here" instruction text + the "Limit ... per file" caption */
-    div[data-testid="stFileUploaderDropzone"] span,
-    div[data-testid="stFileUploaderDropzone"] small,
-    div[data-testid="stFileUploaderDropzone"] p {{
-        color: #ffffff !important;
-    }}
-    /* the "Browse files" button — kept a step lighter than the box so white text stays legible */
-    div[data-testid="stFileUploaderDropzone"] button {{
-        background-color: #25487e !important;
-        color: #ffffff !important;
-        border: 1px solid #3a5d8f !important;
-        font-weight: 700 !important;
-    }}
-    div[data-testid="stFileUploaderDropzone"] button:hover {{
-        background-color: #315997 !important;
-    }}
-    /* once a file is picked, the "filename.mp4 / 1.3MB" row below the dropzone */
-    div[data-testid="stFileUploaderFile"],
-    div[data-testid="stFileUploaderFile"] * {{
-        color: #1a1f2b !important;
-    }}
-
-    /* Primary action buttons ("Begin Translation!"): light gold, unchanged hover */
-    .stButton > button {{
-        background: #f2d98d; color: #14181f; border: none; border-radius: 10px;
-        font-weight: 700; font-size: 15px; padding: 12px 20px; transition: all 0.2s ease;
-    }}
-    .stButton > button:hover {{ background: #e8c468; box-shadow: 0 0 12px rgba(232, 196, 104, 0.5); }}
-
-    div[data-testid="stProgress"] > div > div > div {{ background-color: #e8c468 !important; }}
-
-    /* Status badges */
-    .lb-badge {{ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 800; letter-spacing: 0.2px; white-space: nowrap; }}
-    .lb-badge-done {{ background: #1c7a3b; color: #ffffff; }}
-    .lb-badge-progress {{ background: #b23a3a; color: #ffffff; }}
-    .lb-badge-queued {{ background: #a56a10; color: #ffffff; }}
-
-    .lb-recent-row {{ display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #e4dfd0; }}
-    .lb-recent-row:last-child {{ border-bottom: none; }}
-    .lb-recent-title {{ font-weight: 700; font-size: 13.5px; color: #1a1f2b; }}
-    .lb-recent-sub {{ font-size: 11.5px; color: #55524a; margin-top: 2px; }}
-
-    .lb-demo-quote {{ border-radius: 8px; padding: 12px 14px; font-size: 13px; margin-top: 10px; }}
-</style>
-"""
-st.markdown(lecturebridge_css, unsafe_allow_html=True)
-
-# ============================================================
-# TOP NAV + HERO
-# ============================================================
+# Navigation & Header
 st.markdown("""
 <div class="lb-navbar">
     <div class="lb-logo">
@@ -265,9 +51,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ============================================================
-# MAIN LAYOUT: form (left) + recent/demo (right)
-# ============================================================
+# Main UI Layout
 main_col, side_col = st.columns([2, 1], gap="large")
 
 with main_col:
@@ -343,107 +127,6 @@ with side_col:
         </div>
         """, unsafe_allow_html=True)
 
-# ============================================================
-# PROCESSING PIPELINE (unchanged backend, now style-aware)
-# ============================================================
-
-def draw_dialogue_box(text, width, height=130, speaker_name="旁白", accent_hex="#d3bc8e"):
-    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    draw.rectangle([0, 0, width, height], fill=(12, 16, 24, 215))
-
-    accent_rgb = tuple(int(accent_hex.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
-    gold_color = accent_rgb + (220,)
-    draw.line([(0, 2), (width, 2)], fill=gold_color, width=2)
-    draw.line([(0, height - 2), (width, height - 2)], fill=gold_color, width=2)
-
-    font_path = get_chinese_font_path()
-    name_font = None
-    text_font = None
-
-    if font_path:
-        try:
-            name_font = ImageFont.truetype(font_path, 20)
-            text_font = ImageFont.truetype(font_path, 24)
-        except Exception:
-            pass
-
-    if text_font is None:
-        name_font = ImageFont.load_default()
-        text_font = ImageFont.load_default()
-
-    speaker_color = accent_rgb + (255,)
-    draw.text((width // 2, 25), speaker_name, font=name_font, fill=speaker_color, anchor="mm")
-    draw.text((width // 2, 75), text, font=text_font, fill=(255, 255, 255, 255), anchor="mm")
-
-    return ImageClip(np.array(img))
-
-
-def translate_safely(text, google_translator, fallback_translator):
-    if not text or not text.strip():
-        return ""
-
-    for attempt in range(2):
-        try:
-            translated = google_translator.translate(text)
-            if translated:
-                return translated
-        except Exception:
-            if attempt == 0:
-                time.sleep(1.5)
-
-    try:
-        if len(text) <= 500:
-            translated = fallback_translator.translate(text)
-            if translated:
-                return translated
-    except Exception:
-        pass
-
-    return text
-
-
-def get_chinese_font_path():
-    font_filename = "NotoSansSC-Regular.ttf"
-    if not os.path.exists(font_filename):
-        font_url = "https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf"
-        try:
-            urllib.request.urlretrieve(font_url, font_filename)
-        except Exception as e:
-            st.warning(f"Could not download custom font: {e}")
-    return font_filename if os.path.exists(font_filename) else None
-
-
-def create_subtitle_clip(text, width, height, fontsize=28):
-    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    font_path = get_chinese_font_path()
-    font = None
-
-    if font_path:
-        try:
-            font = ImageFont.truetype(font_path, fontsize)
-        except Exception:
-            pass
-
-    if font is None:
-        font_names = ["msyh.ttc", "simhei.ttf", "msyhbd.ttc", "PingFang.ttc"]
-        for fn in font_names:
-            try:
-                font = ImageFont.truetype(fn, fontsize)
-                break
-            except IOError:
-                continue
-
-    if font is None:
-        font = ImageFont.load_default()
-
-    draw.text((width // 2, height // 2), text, font=font, fill="white", anchor="mm")
-    return ImageClip(np.array(img))
-
-
 if uploaded_file is not None:
     input_path = "input_temp.mp4"
     with open(input_path, "wb") as f:
@@ -474,6 +157,7 @@ if uploaded_file is not None and generate_clicked:
         progress_bar.progress(50)
         google_translator = GoogleTranslator(source="en", target="zh-CN")
         fallback_translator = MyMemoryTranslator(source="en-GB", target="zh-CN")
+        
         subtitle_data = []
         for segment in segments:
             en_text = segment.text.strip()
@@ -493,37 +177,7 @@ if uploaded_file is not None and generate_clicked:
         status_text.text("Rendering dialogue boxes...")
         progress_bar.progress(75)
 
-        video = VideoFileClip(input_path)
-        clips = [video]
-
-        for sub in subtitle_data:
-            duration = sub["end"] - sub["start"]
-            if duration <= 0:
-                continue
-
-            box_width = int(video.w * 0.8)
-            box_height = 120
-            box_x = (video.w - box_width) // 2
-            box_y = video.h - 150
-
-            dialogue_clip = (draw_dialogue_box(sub["text"], width=box_width, height=box_height,
-                                                speaker_name=style["speaker"], accent_hex=style["accent"])
-                              .set_start(sub["start"])
-                              .set_duration(duration)
-                              .set_position((box_x, box_y)))
-            clips.append(dialogue_clip)
-
-        final_video = CompositeVideoClip(clips)
-        output_path = "output_translated.mp4"
-
-        final_video.write_videofile(
-            output_path,
-            fps=video.fps,
-            codec="libx264",
-            audio_codec="aac",
-            preset="ultrafast",
-            ffmpeg_params=["-pix_fmt", "yuv420p"],
-        )
+        output_path = process_video_subtitles(input_path, subtitle_data, style)
 
         progress_bar.progress(100)
         status_text.text("Done!")
@@ -532,6 +186,10 @@ if uploaded_file is not None and generate_clicked:
 
         st.markdown("### Your LectureBridge Translated Video")
         st.video(output_path)
+
+    except Exception as e:
+        job["status"] = "queued"
+        st.error(f"An error occurred during processing: {e}")
 
     except Exception as e:
         job["status"] = "queued"

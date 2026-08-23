@@ -150,10 +150,19 @@ lecturebridge_css = f"""
        these selectors deliberately have NO tag qualifier so they match
        regardless of what tag it actually is. */
     [data-testid="stFileUploaderDropzone"] {{
-    background-color: #ffffff !important;
+    background-color: #16325c !important;
     border: 2px dashed #c9c2ac !important;
     border-radius: 12px !important;
     }}
+    div[data-testid="stFileUploaderDropzone"] > div {
+        background-color: transparent !important;
+    }
+
+/* 3. Override hover states injected by Streamlit's UI theme engine */
+    div[data-testid="stFileUploaderDropzone"]:hover {
+        background-color: #1d3e72 !important;
+        border-color: #e8c468 !important;
+    }
 
     [data-testid="stFileUploaderDropzone"] span,
     [data-testid="stFileUploaderDropzone"] small,

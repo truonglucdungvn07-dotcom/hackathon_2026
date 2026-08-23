@@ -209,6 +209,51 @@ lecturebridge_css = f"""
     .lb-recent-title {{ font-weight: 700; font-size: 13.5px; color: #1a1f2b; }}
     .lb-recent-sub {{ font-size: 11.5px; color: #55524a; margin-top: 2px; }}
     .lb-demo-quote {{ border-radius: 8px; padding: 12px 14px; font-size: 13px; margin-top: 10px; }}
+/* FINAL FILE-UPLOADER OVERRIDE */
+[data-testid="stFileUploader"] section,
+section[data-testid="stFileUploaderDropzone"],
+[data-testid="stFileUploaderDropzone"],
+[data-testid="stFileUploader"] [data-baseweb="file-uploader"] {{
+    background: #f8f5ed !important;
+    background-color: #f8f5ed !important;
+    border: 2px dashed #b9ad91 !important;
+    border-radius: 12px !important;
+}}
+
+/* Các lớp nằm bên trong ô upload */
+[data-testid="stFileUploaderDropzone"] > div,
+[data-testid="stFileUploader"] section > div {{
+    background: transparent !important;
+    background-color: transparent !important;
+}}
+
+/* Dòng: 200MB per file • MP4, MOV */
+[data-testid="stFileUploader"] p,
+[data-testid="stFileUploader"] small,
+[data-testid="stFileUploader"] span {{
+    color: #252b36 !important;
+    opacity: 1 !important;
+}}
+
+/* Nút Upload */
+[data-testid="stFileUploader"] button {{
+    background: #f2d98d !important;
+    background-color: #f2d98d !important;
+    color: #14181f !important;
+    border: 1px solid #d2b85f !important;
+}}
+
+/* Chữ và icon bên trong nút Upload */
+[data-testid="stFileUploader"] button *,
+[data-testid="stFileUploader"] button svg {{
+    color: #14181f !important;
+    fill: #14181f !important;
+    opacity: 1 !important;
+}}
+
+[data-testid="stFileUploader"] button:hover {{
+    background: #e8c468 !important;
+}}
 </style>
 """
 st.markdown(lecturebridge_css, unsafe_allow_html=True)

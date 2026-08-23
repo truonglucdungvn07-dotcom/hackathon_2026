@@ -181,32 +181,32 @@ lecturebridge_css = f"""
     {style_selected_css}
 
     /* File uploader as dropzone — cover the box AND everything inside it */
-    div[data-testid="stFileUploaderDropzone"] {
+    div[data-testid="stFileUploaderDropzone"] {{
         background-color: #ffffff !important;
         border: 2px dashed #c9c2ac !important;
         border-radius: 12px !important;
-    }
+    }}
     /* the "Drag and drop file here" instruction text + the "Limit ... per file" caption */
     div[data-testid="stFileUploaderDropzone"] span,
     div[data-testid="stFileUploaderDropzone"] small,
-    div[data-testid="stFileUploaderDropzone"] p {
+    div[data-testid="stFileUploaderDropzone"] p {{
         color: #1a1f2b !important;
-    }
+    }}
     /* the "Browse files" button */
-    div[data-testid="stFileUploaderDropzone"] button {
+    div[data-testid="stFileUploaderDropzone"] button {{
         background-color: #f0ebe0 !important;
         color: #14181f !important;
         border: 1px solid #cfc8b4 !important;
         font-weight: 700 !important;
-    }
-    div[data-testid="stFileUploaderDropzone"] button:hover {
+    }}
+    div[data-testid="stFileUploaderDropzone"] button:hover {{
         background-color: #e8c468 !important;
-    }
+    }}
     /* once a file is picked, the "filename.mp4 / 1.3MB" row below the dropzone */
     div[data-testid="stFileUploaderFile"],
-    div[data-testid="stFileUploaderFile"] * {
+    div[data-testid="stFileUploaderFile"] * {{
         color: #1a1f2b !important;
-    }
+    }}
     /* Primary action buttons: cream flat style (excludes style-card buttons above) */
     .stButton > button {{
         background: #f0ebe0; color: #14181f; border: none; border-radius: 10px;

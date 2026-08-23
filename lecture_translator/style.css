@@ -145,39 +145,44 @@ lecturebridge_css = f"""
         white-space: normal !important;
     }}
     {style_selected_css}
-    /* File uploader as dropzone — dark blue box, white text throughout.
-       NOTE: the real element Streamlit renders is a <section>, not a <div> —
-       these selectors deliberately have NO tag qualifier so they match
-       regardless of what tag it actually is. */
-    [data-testid="stFileUploaderDropzone"] {{
-    background-color: #16325c !important;
+    /* File uploader */
+.st-key-lecture_card [data-testid="stFileUploader"] section,
+.st-key-lecture_card [data-testid="stFileUploaderDropzone"] {{
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     border: 2px dashed #c9c2ac !important;
     border-radius: 12px !important;
-    }}
-    div[data-testid="stFileUploaderDropzone"] > div {
-        background-color: transparent !important;
-    }
+}}
 
-/* 3. Override hover states injected by Streamlit's UI theme engine */
-    div[data-testid="stFileUploaderDropzone"]:hover {
-        background-color: #1d3e72 !important;
-        border-color: #e8c468 !important;
-    }
+.st-key-lecture_card [data-testid="stFileUploader"] section > div {{
+    background-color: #ffffff !important;
+}}
 
-    [data-testid="stFileUploaderDropzone"] span,
-    [data-testid="stFileUploaderDropzone"] small,
-    [data-testid="stFileUploaderDropzone"] p,
-    [data-testid="stFileUploaderDropzoneInstructions"],
-    [data-testid="stFileUploaderDropzoneInstructions"] * {{
-        color: #1a1f2b !important;
-    }}
+.st-key-lecture_card [data-testid="stFileUploader"] section p,
+.st-key-lecture_card [data-testid="stFileUploader"] section small,
+.st-key-lecture_card [data-testid="stFileUploader"] section span {{
+    color: #1a1f2b !important;
+}}
 
-    [data-testid="stFileUploaderDropzone"] button {{
+.st-key-lecture_card [data-testid="stFileUploader"] button {{
     background-color: #f2d98d !important;
     color: #14181f !important;
-    border: none !important;
-    font-weight: 700 !important;
-    }}
+    border: 1px solid #d4b85e !important;
+}}
+
+.st-key-lecture_card [data-testid="stFileUploader"] button svg {{
+    fill: #14181f !important;
+    color: #14181f !important;
+}}
+
+.st-key-lecture_card [data-testid="stFileUploader"] button:hover {{
+    background-color: #e8c468 !important;
+}}
+
+.st-key-lecture_card [data-testid="stFileUploaderFile"],
+.st-key-lecture_card [data-testid="stFileUploaderFile"] * {{
+    color: #1a1f2b !important;
+}}
 
     [data-testid="stFileUploaderDropzone"] button:hover {{
     background-color: #e8c468 !important;

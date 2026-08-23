@@ -69,7 +69,44 @@ from faster_whisper import WhisperModel
 from deep_translator import GoogleTranslator, MyMemoryTranslator
 from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, ColorClip
 
+def draw_genshin_cutscene_dialogue(text, width, height=130, speaker_name="旅行者"):
+    # 1. Create transparent RGBA canvas
+    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
 
+    # 2. Wide dark semi-transparent background band (Genshin Cutscene Style)
+    # Filling the banner with high opacity towards the middle
+    draw.rectangle([0, 0, width, height], fill=(12, 16, 24, 215))
+
+    # 3. Top and Bottom Gold Accent Lines (#D3BC8E)
+    gold_color = (211, 188, 142, 220)
+    draw.line([(0, 2), (width, 2)], fill=gold_color, width=2)
+    draw.line([(0, height - 2), (width, height - 2)], fill=gold_color, width=2)
+
+    # 4. Load CJK Fonts
+    font_path = get_chinese_font_path()
+    name_font = None
+    text_font = None
+
+    if font_path:
+        try:
+            name_font = ImageFont.truetype(font_path, 20)
+            text_font = ImageFont.truetype(font_path, 24)
+        except Exception:
+            pass
+
+    if text_font is None:
+        name_font = ImageFont.load_default()
+        text_font = ImageFont.load_default()
+
+    # 5. Draw Gold Speaker Name (Centered Top)
+    speaker_color = (243, 226, 178, 255) # Genshin Gold Title Text
+    draw.text((width // 2, 25), speaker_name, font=name_font, fill=speaker_color, anchor="mm")
+
+    # 6. Draw White Chinese Dialogue Text (Centered Below Speaker Name)
+    draw.text((width // 2, 75), text, font=text_font, fill=(255, 255, 255, 255), anchor="mm")
+
+    return ImageClip(np.array(img))
 
 def translate_safely(text, google_translator, fallback_translator):
     if not text or not text.strip():
@@ -224,8 +261,14 @@ if uploaded_file is not None:
                             .set_duration(duration)
                             .set_position((box_x + 20, box_y)))
 
+                dialogue_clip = (draw_genshin_cutscene_dialogue(sub["text"], width=box_width, height=box_height, speaker_name="派蒙")
+                                 .set_start(sub["start"])
+                                 .set_duration(duration)
+                                .set_position((box_x, box_y))
+                )
                 clips.append(box_clip)
                 clips.append(txt_clip)
+                clips.append(dialogue_clip)
 
             final_video = CompositeVideoClip(clips)
             output_path = "output_mandarin.mp4"

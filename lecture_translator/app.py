@@ -125,7 +125,7 @@ if uploaded_file is not None:
                 en_text = segment.text.strip()
                 if not en_text:
                     continue
-                zh_text = translator.translate(en_text, google_translator, fallback_translator)
+                zh_text = translate_safely(en_text, google_translator, fallback_translator)
                 subtitle_data.append({
                     "start": segment.start,
                     "end": segment.end,

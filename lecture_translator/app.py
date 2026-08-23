@@ -3,7 +3,7 @@ import os
 import urllib.request
 import numpy as np
 import streamlit as st
-st.set_page_config(page_title="Genshin Video Translator", page_icon="✨", layout="centered")
+st.set_page_config(page_title="Genshin Video Translator", page_icon="🥰", layout="centered")
 
 # --- Custom Genshin Impact Theme CSS ---
 genshin_css = """
@@ -183,7 +183,6 @@ def create_subtitle_clip(text, width, height, fontsize=28):
     return ImageClip(np.array(img))
 
 # --- Streamlit UI ---
-st.set_page_config(page_title="Genshin Video Translator", page_icon="✨", layout="centered")
 
 st.title("✨ Genshin-Style Video Translator")
 st.write("Upload an English video, and turn it into a Mandarin!")
@@ -250,24 +249,12 @@ if uploaded_file is not None:
                 box_x = (video.w - box_width) // 2
                 box_y = video.h - 150
 
-                box_clip = (ColorClip(size=(box_width, box_height), color=(30, 30, 30))
-                            .set_opacity(0.75)
-                            .set_start(sub["start"])
-                            .set_duration(duration)
-                            .set_position((box_x, box_y)))
-
-                txt_clip = (create_subtitle_clip(sub["text"], box_width - 40, box_height)
-                            .set_start(sub["start"])
-                            .set_duration(duration)
-                            .set_position((box_x + 20, box_y)))
 
                 dialogue_clip = (draw_genshin_cutscene_dialogue(sub["text"], width=box_width, height=box_height, speaker_name="派蒙")
                                  .set_start(sub["start"])
                                  .set_duration(duration)
                                 .set_position((box_x, box_y))
                 )
-                clips.append(box_clip)
-                clips.append(txt_clip)
                 clips.append(dialogue_clip)
 
             final_video = CompositeVideoClip(clips)

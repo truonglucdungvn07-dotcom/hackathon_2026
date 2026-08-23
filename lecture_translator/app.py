@@ -25,7 +25,7 @@ from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, ColorCl
 STYLES = {
     "storytelling": {
         "label": "Storytelling 故事风",
-        "accent": "#e0577a",
+        "accent": "#c9366a",
         "bg": "#f7d9e1",
         "speaker": "旁白",
         "desc": "Rewrites complex business/humanities theories as vivid historical parables and case stories. Highly visual.",
@@ -33,7 +33,7 @@ STYLES = {
     },
     "casual": {
         "label": "Casual Chat 闲聊风",
-        "accent": "#3b82c4",
+        "accent": "#1d63a8",
         "bg": "#d7e6f5",
         "speaker": "同学",
         "desc": "Translates dense formulas and concepts into relaxed, casual gossip style. Feels like chatting with roommates.",
@@ -41,7 +41,7 @@ STYLES = {
     },
     "academic": {
         "label": "Academic 学术风",
-        "accent": "#a6742c",
+        "accent": "#8a5c15",
         "bg": "#efe0bd",
         "speaker": "教授",
         "desc": "Direct, highly structured, standardized academic terminology, ideal for engineering, mathematics and law papers.",
@@ -49,7 +49,7 @@ STYLES = {
     },
     "comic": {
         "label": "Comic / Funny 搞笑风",
-        "accent": "#7c5cd6",
+        "accent": "#5f3fc4",
         "bg": "#e3ddf7",
         "speaker": "梗王",
         "desc": "Infuses internet slang and memes to explain dry points. Turn 2-hour lectures into high-quality comedy.",
@@ -67,148 +67,150 @@ UNIVERSITIES = [
 ]
 
 # ============================================================
-# LECTUREBRIDGE THEME CSS
-# ============================================================
-lecturebridge_css = """
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap');
-
-    html, body, [class*="css"] { font-family: 'Poppins', 'Noto Sans SC', sans-serif; }
-
-    .stApp {
-        background: #0d1420;
-        color: #ece8de;
-    }
-
-    #MainMenu, header[data-testid="stHeader"], footer { visibility: hidden; height: 0; }
-
-    .block-container { padding-top: 1.5rem; padding-bottom: 3rem; max-width: 1300px; }
-
-    /* ---- Top nav bar ---- */
-    .lb-navbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #0d1420;
-        border-bottom: 1px solid #1f2937;
-        padding: 14px 4px 18px 4px;
-        margin-bottom: 18px;
-    }
-    .lb-logo { display: flex; align-items: center; gap: 12px; }
-    .lb-logo-box { width: 38px; height: 38px; background: #f0ebe0; border-radius: 8px; }
-    .lb-logo-text { font-weight: 800; font-size: 20px; color: #f0ebe0; line-height: 1.1; }
-    .lb-logo-sub { font-size: 10px; letter-spacing: 1px; color: #8b93a5; }
-    .lb-nav-links { display: flex; gap: 32px; font-weight: 600; font-size: 15px; }
-    .lb-nav-link-active { color: #e8c468; }
-    .lb-nav-link { color: #ccd1db; }
-    .lb-user { display: flex; align-items: center; gap: 10px; text-align: right; }
-    .lb-user-name { font-weight: 700; font-size: 14px; color: #f0ebe0; }
-    .lb-user-sub { font-size: 11px; color: #8b93a5; }
-    .lb-avatar { width: 34px; height: 34px; border-radius: 50%; background: #3a4256; }
-
-    /* ---- Hero ---- */
-    .lb-hero {
-        background: #151d2c;
-        border: 1px solid #232c3d;
-        border-radius: 14px;
-        padding: 28px 32px;
-        margin-bottom: 22px;
-    }
-    .lb-hero h1 {
-        color: #f0ebe0 !important;
-        font-size: 30px;
-        font-weight: 800;
-        margin: 0 0 6px 0;
-    }
-    .lb-hero h1 span { color: #e8c468; }
-    .lb-hero p { color: #9aa2b3; margin: 0; font-size: 15px; }
-
-    /* ---- Card panels ---- */
-    .lb-card {
-        background: #f4f1e8;
-        border-radius: 14px;
-        padding: 26px 28px;
-        color: #1a1f2b;
-    }
-    .lb-card h3 { color: #1a1f2b !important; font-weight: 700; margin-top: 0; }
-    .lb-side-card {
-        background: #f4f1e8;
-        border-radius: 14px;
-        padding: 20px 22px;
-        color: #1a1f2b;
-        margin-bottom: 18px;
-    }
-    .lb-side-card h4 { color: #1a1f2b !important; font-weight: 700; margin: 0 0 12px 0; }
-
-    /* Field labels rendered above widgets */
-    .lb-field-label { font-weight: 600; font-size: 13px; color: #1a1f2b; margin-bottom: -8px; }
-
-    /* Streamlit text inputs / selects styled like cream fields */
-    div[data-testid="stTextInput"] input, div[data-testid="stSelectbox"] > div > div {
-        background-color: #ffffff !important;
-        border: 1px solid #d8d2c2 !important;
-        border-radius: 8px !important;
-        color: #1a1f2b !important;
-    }
-
-    /* Style-choice radio rendered as colored cards */
-    div[role="radiogroup"] { gap: 10px; }
-    div[role="radiogroup"] label {
-        border-radius: 10px !important;
-        padding: 4px 2px !important;
-    }
-
-    /* File uploader as dropzone */
-    div[data-testid="stFileUploaderDropzone"] {
-        background-color: #ffffff !important;
-        border: 2px dashed #c9c2ac !important;
-        border-radius: 12px !important;
-    }
-
-    /* Buttons: cream RPG-free flat style */
-    .stButton > button {
-        background: #f0ebe0 !important;
-        color: #14181f !important;
-        border: none !important;
-        border-radius: 10px !important;
-        font-weight: 700 !important;
-        font-size: 15px !important;
-        padding: 12px 20px !important;
-        transition: all 0.2s ease !important;
-    }
-    .stButton > button:hover {
-        background: #e8c468 !important;
-        box-shadow: 0 0 12px rgba(232, 196, 104, 0.5) !important;
-    }
-
-    /* Progress bar accent */
-    div[data-testid="stProgress"] > div > div > div { background-color: #e8c468 !important; }
-
-    /* Badges for recent translation status */
-    .lb-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-    .lb-badge-done { background: #d7f2df; color: #1c7a3b; }
-    .lb-badge-progress { background: #fbdada; color: #b23a3a; }
-    .lb-badge-queued { background: #fdeecb; color: #a56a10; }
-
-    .lb-recent-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #e4dfd0; }
-    .lb-recent-title { font-weight: 700; font-size: 13.5px; color: #1a1f2b; }
-    .lb-recent-sub { font-size: 11.5px; color: #767162; margin-top: 2px; }
-
-    .lb-demo-quote { border-radius: 8px; padding: 12px 14px; font-size: 13px; margin-top: 4px; }
-</style>
-"""
-st.markdown(lecturebridge_css, unsafe_allow_html=True)
-
-# ============================================================
-# SESSION STATE
+# SESSION STATE (declared before CSS so the CSS can react to it)
 # ============================================================
 if "jobs" not in st.session_state:
-    # seed with a couple of example rows so "Recent Translations" isn't empty on first run
     st.session_state.jobs = [
-        {"title": "COMP20003 Lecture 1", "meta": "UniMelb • 58 Mins", "status": "queued", "progress": 0},
+        {"title": "COMP20003 Lecture 1", "meta": "UniMelb • 58 Mins", "status": "queued"},
     ]
 if "selected_style" not in st.session_state:
     st.session_state.selected_style = "storytelling"
+
+selected_key = st.session_state.selected_style
+
+# ============================================================
+# LECTUREBRIDGE THEME CSS
+# Cards/panels are styled via st.container(key=...), which gives
+# each one a single stable class (st-key-<key>) on the ACTUAL
+# wrapper div holding its children — not a split, unclosed tag
+# spread across two separate st.markdown() calls. That was the
+# cause of the empty "ghost boxes" and the overlapping label text
+# in the previous version.
+# ============================================================
+style_selected_css = "\n".join(
+    f'.st-key-style_btn_{key} button {{ border: 2.5px solid {s["accent"]} !important; box-shadow: 0 0 0 3px {s["accent"]}33 !important; }}'
+    for key, s in STYLES.items()
+    if key == selected_key
+)
+
+lecturebridge_css = f"""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap');
+
+    html, body, [class*="css"] {{ font-family: 'Poppins', 'Noto Sans SC', sans-serif; }}
+
+    .stApp {{ background: #0d1420; color: #ece8de; }}
+    #MainMenu, header[data-testid="stHeader"], footer {{ visibility: hidden; height: 0; }}
+    .block-container {{ padding-top: 1.5rem; padding-bottom: 3rem; max-width: 1300px; }}
+
+    /* ---- Top nav bar ---- */
+    .lb-navbar {{
+        display: flex; align-items: center; justify-content: space-between;
+        background: #0d1420; border-bottom: 1px solid #1f2937;
+        padding: 14px 4px 18px 4px; margin-bottom: 18px;
+    }}
+    .lb-logo {{ display: flex; align-items: center; gap: 12px; }}
+    .lb-logo-box {{ width: 38px; height: 38px; background: #f0ebe0; border-radius: 8px; }}
+    .lb-logo-text {{ font-weight: 800; font-size: 20px; color: #f0ebe0; line-height: 1.1; }}
+    .lb-logo-sub {{ font-size: 10px; letter-spacing: 1px; color: #8b93a5; }}
+    .lb-nav-links {{ display: flex; gap: 32px; font-weight: 600; font-size: 15px; }}
+    .lb-nav-link-active {{ color: #e8c468; }}
+    .lb-nav-link {{ color: #ccd1db; }}
+    .lb-user {{ display: flex; align-items: center; gap: 10px; text-align: right; }}
+    .lb-user-name {{ font-weight: 700; font-size: 14px; color: #f0ebe0; }}
+    .lb-user-sub {{ font-size: 11px; color: #8b93a5; }}
+    .lb-avatar {{ width: 34px; height: 34px; border-radius: 50%; background: #3a4256; }}
+
+    /* ---- Hero ---- */
+    .lb-hero {{ background: #151d2c; border: 1px solid #232c3d; border-radius: 14px; padding: 28px 32px; margin-bottom: 22px; }}
+    .lb-hero h1 {{ color: #f0ebe0 !important; font-size: 30px; font-weight: 800; margin: 0 0 6px 0; }}
+    .lb-hero h1 span {{ color: #e8c468; }}
+    .lb-hero p {{ color: #9aa2b3; margin: 0; font-size: 15px; }}
+
+    /* ---- Card panels (real containers via st.container(key=...)) ---- */
+    .st-key-lecture_card, .st-key-recent_card, .st-key-demo_card {{
+        background: #f4f1e8 !important;
+        border-radius: 14px !important;
+        padding: 26px 28px !important;
+        margin-bottom: 18px !important;
+    }}
+    .st-key-lecture_card *, .st-key-recent_card *, .st-key-demo_card * {{ color: #1a1f2b; }}
+    .st-key-lecture_card h3, .st-key-recent_card h4, .st-key-demo_card h4 {{ font-weight: 700 !important; margin-top: 0 !important; }}
+
+    /* Field labels: native Streamlit label, styled — no manual overlay, no overlap */
+    div[data-testid="stTextInput"] label p,
+    div[data-testid="stSelectbox"] label p {{
+        color: #1a1f2b !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+    }}
+
+    /* Text inputs / selects: solid white field, black text, dark-but-legible placeholder */
+    div[data-testid="stTextInput"] input {{
+        background-color: #ffffff !important;
+        border: 1px solid #cfc8b4 !important;
+        border-radius: 8px !important;
+        color: #000000 !important;
+        caret-color: #000000 !important;
+    }}
+    div[data-testid="stTextInput"] input::placeholder {{
+        color: #55524a !important;
+        opacity: 1 !important;
+    }}
+    div[data-testid="stSelectbox"] > div > div {{
+        background-color: #ffffff !important;
+        border: 1px solid #cfc8b4 !important;
+        border-radius: 8px !important;
+    }}
+    div[data-testid="stSelectbox"] span {{ color: #000000 !important; }}
+
+    /* Style-choice cards: plain buttons, no radio circle, colored per style */
+    .st-key-style_btn_storytelling button {{ background: {STYLES['storytelling']['bg']} !important; color: {STYLES['storytelling']['accent']} !important; }}
+    .st-key-style_btn_casual button       {{ background: {STYLES['casual']['bg']} !important;       color: {STYLES['casual']['accent']} !important; }}
+    .st-key-style_btn_academic button     {{ background: {STYLES['academic']['bg']} !important;     color: {STYLES['academic']['accent']} !important; }}
+    .st-key-style_btn_comic button        {{ background: {STYLES['comic']['bg']} !important;        color: {STYLES['comic']['accent']} !important; }}
+    div[class*="st-key-style_btn_"] button {{
+        border: 2.5px solid transparent !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        font-size: 13.5px !important;
+        padding: 10px 8px !important;
+        min-height: 44px !important;
+        white-space: normal !important;
+    }}
+    {style_selected_css}
+
+    /* File uploader as dropzone */
+    div[data-testid="stFileUploaderDropzone"] {{
+        background-color: #ffffff !important;
+        border: 2px dashed #c9c2ac !important;
+        border-radius: 12px !important;
+    }}
+
+    /* Primary action buttons: cream flat style (excludes style-card buttons above) */
+    .stButton > button {{
+        background: #f0ebe0; color: #14181f; border: none; border-radius: 10px;
+        font-weight: 700; font-size: 15px; padding: 12px 20px; transition: all 0.2s ease;
+    }}
+    .stButton > button:hover {{ background: #e8c468; box-shadow: 0 0 12px rgba(232, 196, 104, 0.5); }}
+
+    div[data-testid="stProgress"] > div > div > div {{ background-color: #e8c468 !important; }}
+
+    /* Status badges */
+    .lb-badge {{ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 800; letter-spacing: 0.2px; white-space: nowrap; }}
+    .lb-badge-done {{ background: #1c7a3b; color: #ffffff; }}
+    .lb-badge-progress {{ background: #b23a3a; color: #ffffff; }}
+    .lb-badge-queued {{ background: #a56a10; color: #ffffff; }}
+
+    .lb-recent-row {{ display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #e4dfd0; }}
+    .lb-recent-row:last-child {{ border-bottom: none; }}
+    .lb-recent-title {{ font-weight: 700; font-size: 13.5px; color: #1a1f2b; }}
+    .lb-recent-sub {{ font-size: 11.5px; color: #55524a; margin-top: 2px; }}
+
+    .lb-demo-quote {{ border-radius: 8px; padding: 12px 14px; font-size: 13px; margin-top: 10px; }}
+</style>
+"""
+st.markdown(lecturebridge_css, unsafe_allow_html=True)
 
 # ============================================================
 # TOP NAV + HERO
@@ -248,83 +250,77 @@ st.markdown("""
 main_col, side_col = st.columns([2, 1], gap="large")
 
 with main_col:
-    st.markdown('<div class="lb-card">', unsafe_allow_html=True)
-    st.markdown("### Lecture Details / 课程详情")
+    with st.container(key="lecture_card"):
+        st.markdown("### Lecture Details / 课程详情")
 
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown('<div class="lb-field-label">Video Title 视频标题</div>', unsafe_allow_html=True)
-        video_title = st.text_input("Video Title", placeholder="e.g., Intro to Financial Accounting Week 3", label_visibility="collapsed")
-    with c2:
-        st.markdown('<div class="lb-field-label">Course / Subject Code 课程/科目代码</div>', unsafe_allow_html=True)
-        course_code = st.text_input("Course Code", placeholder="e.g., COMP10003", label_visibility="collapsed")
+        c1, c2 = st.columns(2)
+        with c1:
+            video_title = st.text_input("Video Title 视频标题", placeholder="e.g., Intro to Financial Accounting Week 3")
+        with c2:
+            course_code = st.text_input("Course / Subject Code 课程/科目代码", placeholder="e.g., COMP10003")
 
-    c3, c4 = st.columns(2)
-    with c3:
-        st.markdown('<div class="lb-field-label">University 就读大学</div>', unsafe_allow_html=True)
-        university = st.selectbox("University", UNIVERSITIES, label_visibility="collapsed")
-    with c4:
-        st.markdown('<div class="lb-field-label">Language Pair 语伴选择</div>', unsafe_allow_html=True)
-        st.selectbox("Language Pair", ["English (Aussie)  →  Chinese captions"], label_visibility="collapsed")
+        c3, c4 = st.columns(2)
+        with c3:
+            university = st.selectbox("University 就读大学", UNIVERSITIES)
+        with c4:
+            st.selectbox("Language Pair 语伴选择", ["English (Aussie)  →  Chinese captions"])
 
-    st.markdown('<div class="lb-field-label" style="margin-top:6px;">Select Capture &amp; Captioning Style 选择字幕翻译风格</div>', unsafe_allow_html=True)
-    style_key = st.radio(
-        "Style",
-        options=list(STYLES.keys()),
-        format_func=lambda k: STYLES[k]["label"],
-        horizontal=True,
-        label_visibility="collapsed",
-        key="selected_style",
-    )
-    style = STYLES[style_key]
-    st.markdown(
-        f'<div style="background:{style["bg"]};border:1px solid {style["accent"]}55;border-radius:10px;'
-        f'padding:10px 14px;font-size:13px;color:#2a2a2a;margin-bottom:6px;">'
-        f'<b style="color:{style["accent"]};">{style["label"]}</b> — {style["desc"]}</div>',
-        unsafe_allow_html=True,
-    )
+        st.markdown('<div style="font-weight:700;font-size:13px;color:#1a1f2b;margin:8px 0 6px 0;">Select Capture &amp; Captioning Style 选择字幕翻译风格</div>', unsafe_allow_html=True)
+        style_cols = st.columns(4)
+        for col, key in zip(style_cols, STYLES.keys()):
+            with col:
+                with st.container(key=f"style_btn_{key}"):
+                    check = "✓ " if key == selected_key else ""
+                    if st.button(f"{check}{STYLES[key]['label']}", key=f"pick_{key}", use_container_width=True):
+                        st.session_state.selected_style = key
+                        st.rerun()
 
-    st.markdown("<br/>", unsafe_allow_html=True)
-    uploaded_file = st.file_uploader(
-        "Place Your Recording Here, Traveler — supports drag-and-drop or direct upload (MP4, MOV, AVI, M4A, MP3, up to 2GB)",
-        type=["mp4", "mov"],
-    )
+        style = STYLES[st.session_state.selected_style]
+        st.markdown(
+            f'<div style="background:{style["bg"]};border:1px solid {style["accent"]}55;border-radius:10px;'
+            f'padding:10px 14px;font-size:13px;color:#2a2a2a;margin:10px 0 6px 0;">'
+            f'<b style="color:{style["accent"]};">{style["label"]}</b> — {style["desc"]}</div>',
+            unsafe_allow_html=True,
+        )
 
-    generate_clicked = st.button("Begin Translation! 开始翻译！", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+        uploaded_file = st.file_uploader(
+            "Place Your Recording Here, Traveler — supports drag-and-drop or direct upload (MP4, MOV, AVI, M4A, MP3, up to 2GB)",
+            type=["mp4", "mov"],
+        )
+
+        generate_clicked = st.button("Begin Translation! 开始翻译！", use_container_width=True)
 
 with side_col:
-    st.markdown('<div class="lb-side-card">', unsafe_allow_html=True)
-    st.markdown("#### Recent Translations 近期翻译进度")
-    for job in st.session_state.jobs[-6:][::-1]:
-        badge_class = {"done": "lb-badge-done", "translating": "lb-badge-progress", "queued": "lb-badge-queued"}.get(job["status"], "lb-badge-queued")
-        badge_label = {"done": "Done 已完成", "translating": "Translating 翻译中", "queued": "Queued 排队中"}.get(job["status"], "Queued 排队中")
-        st.markdown(f"""
-        <div class="lb-recent-row">
-            <div>
-                <div class="lb-recent-title">{job["title"]}</div>
-                <div class="lb-recent-sub">{job["meta"]}</div>
+    with st.container(key="recent_card"):
+        st.markdown("#### Recent Translations 近期翻译进度")
+        for job in st.session_state.jobs[-6:][::-1]:
+            badge_class = {"done": "lb-badge-done", "translating": "lb-badge-progress", "queued": "lb-badge-queued"}.get(job["status"], "lb-badge-queued")
+            badge_label = {"done": "Done 已完成", "translating": "Translating 翻译中", "queued": "Queued 排队中"}.get(job["status"], "Queued 排队中")
+            st.markdown(f"""
+            <div class="lb-recent-row">
+                <div>
+                    <div class="lb-recent-title">{job["title"]}</div>
+                    <div class="lb-recent-sub">{job["meta"]}</div>
+                </div>
+                <span class="lb-badge {badge_class}">{badge_label}</span>
             </div>
-            <span class="lb-badge {badge_class}">{badge_label}</span>
+            """, unsafe_allow_html=True)
+
+    with st.container(key="demo_card"):
+        st.markdown(f"#### Live Style Demo 当前风格对比示例 ({style['label']})")
+        st.markdown(f"""
+        <div class="lb-demo-quote" style="background:#eeeae0;color:#333;">
+            <b>LECTURER SAYS:</b><br/>
+            "Now, marginal utility is basically the extra satisfaction a consumer gets from having one more unit of a good or service..."
+        </div>
+        <div class="lb-demo-quote" style="background:{style['bg']};color:{style['accent']};font-weight:600;">
+            {style['label'].upper()} STYLE CHINESE SUBTITLE:<br/>
+            <span style="color:#2a2a2a;font-weight:500;">
+            "{style['prefix']}想象一下，边际效用就是你多吃一块西瓜时，比上一块多得到的那一点点满足感……"
+            </span>
         </div>
         """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="lb-side-card">', unsafe_allow_html=True)
-    st.markdown(f"#### Live Style Demo 当前风格对比示例 ({style['label']})")
-    st.markdown(f"""
-    <div class="lb-demo-quote" style="background:#eeeae0;color:#333;">
-        <b>LECTURER SAYS:</b><br/>
-        "Now, marginal utility is basically the extra satisfaction a consumer gets from having one more unit of a good or service..."
-    </div>
-    <div class="lb-demo-quote" style="background:{style['bg']};color:{style['accent']};font-weight:600;">
-        {style['label'].upper()} STYLE CHINESE SUBTITLE:<br/>
-        <span style="color:#2a2a2a;font-weight:500;">
-        "{style['prefix']}想象一下，边际效用就是你多吃一块西瓜时，比上一块多得到的那一点点满足感……"
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================================
 # PROCESSING PIPELINE (unchanged backend, now style-aware)
@@ -438,7 +434,7 @@ if uploaded_file is not None:
 if uploaded_file is not None and generate_clicked:
     display_title = video_title.strip() or uploaded_file.name
     job_label = f"{course_code.strip()} — {display_title}" if course_code.strip() else display_title
-    job = {"title": job_label, "meta": f"{university.split(' (')[0]} • processing", "status": "translating", "progress": 0}
+    job = {"title": job_label, "meta": f"{university.split(' (')[0]} • processing", "status": "translating"}
     st.session_state.jobs.append(job)
 
     progress_bar = st.progress(0)
@@ -488,8 +484,6 @@ if uploaded_file is not None and generate_clicked:
             box_height = 120
             box_x = (video.w - box_width) // 2
             box_y = video.h - 150
-
-        
 
             dialogue_clip = (draw_dialogue_box(sub["text"], width=box_width, height=box_height,
                                                 speaker_name=style["speaker"], accent_hex=style["accent"])

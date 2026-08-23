@@ -1,15 +1,43 @@
+import time
 import os
 import urllib.request
 import numpy as np
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from faster_whisper import WhisperModel
-from deep_translator import GoogleTranslator
+from deep_translator import GoogleTranslator, MyMemoryTranslator
 from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, ColorClip
 
 
 
+def translate_safely(text, google_translator, fallback_translator):
+    if not text or not text.strip():
+        return ""
 
+    # Try Google Translator twice
+    for attempt in range(2):
+        try:
+            translated = google_translator.translate(text)
+
+            if translated:
+                return translated
+
+        except Exception:
+            if attempt == 0:
+                time.sleep(1.5)
+
+    # If Google fails, try MyMemory
+    try:
+        if len(text) <= 500:
+            translated = fallback_translator.translate(text)
+
+            if translated:
+                return translated
+    except Exception:
+        pass
+
+    # Final fallback: keep the English sentence
+    return text
 
 # Function to ensure a Chinese TTF font exists in the environment
 def get_chinese_font_path():
@@ -90,17 +118,22 @@ if uploaded_file is not None:
             # 3. Translate to Mandarin
             status_text.text("Translating to Mandarin...")
             progress_bar.progress(50)
-            translator = GoogleTranslator(source='en', target='zh-CN')
-
+            google_translator = GoogleTranslator(source="en", target="zh-CN")
+            fallback_translator = MyMemoryTranslator(source="en-GB", target="zh-CN")
             subtitle_data = []
             for segment in segments:
                 en_text = segment.text.strip()
-                zh_text = translator.translate(en_text)
+                if not en_text:
+                    continue
+                zh_text = translator.translate(en_text, google_translator, fallback_translator)
                 subtitle_data.append({
                     "start": segment.start,
                     "end": segment.end,
+                    "english": en_text,
+                    "chinese": zh_text,
                     "text": zh_text
                 })
+                time.sleep(0.3)
 
             # 4. Render Video Overlays
             status_text.text("Rendering RPG dialogue boxes...")

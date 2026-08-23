@@ -180,36 +180,37 @@ lecturebridge_css = f"""
     }}
     {style_selected_css}
 
-    /* File uploader as dropzone — cover the box AND everything inside it */
+    /* File uploader as dropzone — dark blue box, white text throughout */
     div[data-testid="stFileUploaderDropzone"] {{
-        background-color: #ffffff !important;
-        border: 2px dashed #c9c2ac !important;
+        background-color: #16325c !important;
+        border: 2px dashed #3a5d8f !important;
         border-radius: 12px !important;
     }}
     /* the "Drag and drop file here" instruction text + the "Limit ... per file" caption */
     div[data-testid="stFileUploaderDropzone"] span,
     div[data-testid="stFileUploaderDropzone"] small,
     div[data-testid="stFileUploaderDropzone"] p {{
-        color: #1a1f2b !important;
+        color: #ffffff !important;
     }}
-    /* the "Browse files" button */
+    /* the "Browse files" button — kept a step lighter than the box so white text stays legible */
     div[data-testid="stFileUploaderDropzone"] button {{
-        background-color: #f0ebe0 !important;
-        color: #14181f !important;
-        border: 1px solid #cfc8b4 !important;
+        background-color: #25487e !important;
+        color: #ffffff !important;
+        border: 1px solid #3a5d8f !important;
         font-weight: 700 !important;
     }}
     div[data-testid="stFileUploaderDropzone"] button:hover {{
-        background-color: #e8c468 !important;
+        background-color: #315997 !important;
     }}
     /* once a file is picked, the "filename.mp4 / 1.3MB" row below the dropzone */
     div[data-testid="stFileUploaderFile"],
     div[data-testid="stFileUploaderFile"] * {{
         color: #1a1f2b !important;
     }}
-    /* Primary action buttons: cream flat style (excludes style-card buttons above) */
+
+    /* Primary action buttons ("Begin Translation!"): light gold, unchanged hover */
     .stButton > button {{
-        background: #f0ebe0; color: #14181f; border: none; border-radius: 10px;
+        background: #f2d98d; color: #14181f; border: none; border-radius: 10px;
         font-weight: 700; font-size: 15px; padding: 12px 20px; transition: all 0.2s ease;
     }}
     .stButton > button:hover {{ background: #e8c468; box-shadow: 0 0 12px rgba(232, 196, 104, 0.5); }}
@@ -481,7 +482,7 @@ if uploaded_file is not None and generate_clicked:
             zh_text = translate_safely(en_text, google_translator, fallback_translator)
             styled_zh_text = f"{style['prefix']}{zh_text}" if style["prefix"] else zh_text
             subtitle_data.append({
-                "start": segment.zstart,
+                "start": segment.start,
                 "end": segment.end,
                 "english": en_text,
                 "chinese": zh_text,
